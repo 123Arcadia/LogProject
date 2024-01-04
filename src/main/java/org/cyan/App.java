@@ -45,7 +45,7 @@ public class App {
         // 可以查看是否为异步日志
         logger.info("是否为异步日志：{}", AsyncLoggerContextSelector.isSelected());
         // 是否为异步日志：true
-        System.out.println("log Async:"+AsyncLoggerContextSelector.isSelected());
+        System.out.println("是否为异步日志 log Async:"+AsyncLoggerContextSelector.isSelected());
         // log Async:true
     }
 

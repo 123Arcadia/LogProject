@@ -58,7 +58,7 @@
           <scope>compile</scope>
       </dependency>
   </dependencies>
-
+    <!--打包的几种方法-->
     <build>
         <plugins>
             <plugin>
