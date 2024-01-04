@@ -6,13 +6,24 @@
         <!-- error级别日志 -->
         <Property name="LOG_ERROR_LEVEL" value="error"/>
         <!-- 在当前目录下创建名为log目录做日志存放的目录 ./mavenProject/logger/log-->
-        <Property name="LOG_HOME" value="./src/log"/>
+        <!-- ${sys:user.dir}/src/log -->
+        <Property name="LOG_HOME" value="./log"/>
 
         <Property name="LOG_ERROR_DIR" value="errorLog"/>
 
         <Property name="LOG_INFO_DIR" value="infoLog"/>
+
+        <!--单独类打印日志目录-->
+        <Property name="LOG_CLASSTOLOG_DIR" value="classToLog"/>
+
+        <!--单独包下打印日志目录-->
+        <Property name="LOG_PACKAGETOLOG_DIR" value="packageToLog"/>
+
+        <!--methodToLog 单独包下打印日志-->
+        <Property name="LOG_METHODTOLOG_DIR" value="methodToLog"/>
+
         <!-- 日志文件大小，超过这个大小将被压缩 -->
-        <Property name="LOG_MAX_SIZE" value="52 MB"/>
+        <Property name="LOG_MAX_SIZE" value="5 MB"/>
         <!-- 保留多少天以内的日志 -->
         <Property name="LOG_DAYS" value="15"/>
         <!--输出日志的格式：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度， %msg：日志消息，%n是换行符 -->
@@ -68,6 +79,57 @@
             <DefaultRolloverStrategy max="${LOG_DAYS}"/>
         </RollingRandomAccessFile>
 
+        <!--单独类打印日志-->
+        <RollingRandomAccessFile name="classToLog"
+                                 fileName="${LOG_HOME}/${LOG_CLASSTOLOG_DIR}/classToLog.log"
+                                 filePattern="${LOG_HOME}/${LOG_CLASSTOLOG_DIR}/classToLog-%d{yyyy-MM-dd}-%i.log.gz"
+                                 immediateFlush="false">
+            <!-- <file>${log.path}/order.log</file>-->
+            <Filters>
+                <ThresholdFilter level="${LOG_ERROR_LEVEL}" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="${TIME_BASED_INTERVAL}"/>
+                <SizeBasedTriggeringPolicy size="${LOG_MAX_SIZE}"/>
+            </Policies>
+            <DefaultRolloverStrategy max="${LOG_DAYS}"/>
+        </RollingRandomAccessFile>
+
+        <!--单独包下打印日志-->
+        <RollingRandomAccessFile name="packToLog"
+                                 fileName="${LOG_HOME}/${LOG_PACKAGETOLOG_DIR}/packageToLog.log"
+                                 filePattern="${LOG_HOME}/${LOG_PACKAGETOLOG_DIR}/packageToLog-%d{yyyy-MM-dd}-%i.log.gz"
+                                 immediateFlush="false">
+            <!-- <file>${log.path}/order.log</file>-->
+            <Filters>
+                <ThresholdFilter level="${LOG_ERROR_LEVEL}" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="${TIME_BASED_INTERVAL}"/>
+                <SizeBasedTriggeringPolicy size="${LOG_MAX_SIZE}"/>
+            </Policies>
+            <DefaultRolloverStrategy max="${LOG_DAYS}"/>
+        </RollingRandomAccessFile>
+
+        <!--methodToLog 打印某一方法日志-->
+        <RollingRandomAccessFile name="methodToLog"
+                                 fileName="${LOG_HOME}/${LOG_METHODTOLOG_DIR}/methodToLog.log"
+                                 filePattern="${LOG_HOME}/${LOG_METHODTOLOG_DIR}/methodToLog-%d{yyyy-MM-dd}-%i.log.gz"
+                                 immediateFlush="false">
+            <!-- <file>${log.path}/order.log</file>-->
+            <Filters>
+                <ThresholdFilter level="${LOG_ERROR_LEVEL}" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="${TIME_BASED_INTERVAL}"/>
+                <SizeBasedTriggeringPolicy size="${LOG_MAX_SIZE}"/>
+            </Policies>
+            <DefaultRolloverStrategy max="${LOG_DAYS}"/>
+        </RollingRandomAccessFile>
+
     </Appenders>
 
     <Loggers>
@@ -79,12 +141,28 @@
         <!-- 测试，生产环境使用 -->
         <!--includeLocation="false"表示是否在日志消息中包含源代码的位置信息。false表示不包含，如果设置为true则会包含。-->
         <!--只记录INFO级别或更高级别的日志消息-->
+        <!--单独提取到文件的日志默认情况下会与root标签的日志重复。 也就是说logger标签会默认继承与root标签。如果想日志不重复可以设置additivity为false-->
         <!--root/ 是同步-->
-        <Root level="${LOG_INFO_LEVEL}" includeLocation="false">
+        <Root level="${LOG_INFO_LEVEL}" includeLocation="false" additivity="false">
             <AppenderRef ref="inf"/>
             <AppenderRef ref="err"/>
             <AppenderRef ref="STDOUT"/>
         </Root>
+
+        <!--单独类打印日志-->
+        <!-- 将logger中的 additivity 属性配置为 false，则这个logger不会将日志流反馈到root中-->
+        <Logger name="classToLog" additivity="false" level="${LOG_INFO_LEVEL}">
+            <AppenderRef ref="classToLog"/>
+        </Logger>
+
+        <!--单独包下打印日志-->
+        <Logger name="org.cyan.packageToLog" additivity="false" level="${LOG_INFO_LEVEL}">
+            <AppenderRef ref="packToLog"/>
+        </Logger>
+        <!--methodToLog 打印某一方法日志-->
+        <Logger name="methodToLog" additivity="false" level="${LOG_INFO_LEVEL}">
+            <AppenderRef ref="methodToLog"/>
+        </Logger>
 
         <!--        <AsyncLogger name="springfox" level="OFF"/> &lt;!&ndash;swagger2日志输出为关闭级别&ndash;&gt;-->
         <!--        <AsyncRoot level="${LOG_INFO_LEVEL}" includeLocation="false">  &lt;!&ndash;异步模式<AsyncRoot>需要依赖jar包disruptor，同步模式<root/>&ndash;&gt;-->
