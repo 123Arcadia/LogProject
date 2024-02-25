@@ -1,5 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration>
+    <Properties>
+        <!-- 日志输出级别 -->
+        <Property name="LOG_INFO_LEVEL" value="info"/>
+        <!-- error级别日志 -->
+        <Property name="LOG_ERROR_LEVEL" value="error"/>
+        <!-- 在当前目录下创建名为log目录做日志存放的目录 ./mavenProject/logger/log-->
+        <!-- ${sys:user.dir}/src/log -->
+        <Property name="LOG_HOME" value="./log"/>
+
+        <Property name="LOG_ERROR_DIR" value="errorLog"/>
+
+        <Property name="LOG_INFO_DIR" value="infoLog"/>
+
+        <!--单独类打印日志目录-->
+        <Property name="LOG_CLASSTOLOG_DIR" value="classToLog"/>
+
+        <!--单独包下打印日志目录-->
+        <Property name="LOG_PACKAGETOLOG_DIR" value="packageToLog"/>
+
+        <!--methodToLog 单独包下打印日志-->
+        <Property name="LOG_METHODTOLOG_DIR" value="methodToLog"/>
+
+        <!-- 日志文件大小，超过这个大小将被压缩 -->
+        <Property name="LOG_MAX_SIZE" value="1 MB"/>
+        <!-- 最多保存文件数量 每次滚动计数器会重新计数 -->
+        <Property name="LOG_DAYS" value="50"/>
+        <!--输出日志的格式：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度， %msg：日志消息，%n是换行符 -->
+        <!--        %d{HH:mm:ss.SSS} 表示输出到毫秒的时间-->
+        <!--        %t 输出当前线程名称-->
+        <!--        %-5level 输出日志级别，-5表示左对齐并且固定输出5个字符，如果不足在右边补0-->
+        <!--        %logger 输出logger名称，因为Root Logger没有名称，所以没有输出-->
+        <!--        %msg 日志文本-->
+        <!--        %n 换行-->
+        <!--        %p:日志级别-->
+        <Property name="LOG_PATTERN" value="[%-5p] %d{yyyy-MM-dd HH:mm:ss.SSS} %m%n"/>
+        <!--        <Property name="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>-->
+
+        <!--interval属性用来指定多久滚动一次-->
+        <Property name="TIME_BASED_INTERVAL" value="1"/>
+
+        <!--日志删除: 该目录下最多保存文件数量-->
+        <Property name="LOG_FILE_COUNT" value="5"/>
+    </Properties>
+
+
     <Appenders>
         <!-- 控制台输出 -->
         <Console name="STDOUT" target="SYSTEM_OUT">
@@ -172,48 +217,6 @@
         <!--        </AsyncRoot>-->
     </Loggers>
 
-    <Properties>
-        <!-- 日志输出级别 -->
-        <Property name="LOG_INFO_LEVEL" value="info"/>
-        <!-- error级别日志 -->
-        <Property name="LOG_ERROR_LEVEL" value="error"/>
-        <!-- 在当前目录下创建名为log目录做日志存放的目录 ./mavenProject/logger/log-->
-        <!-- ${sys:user.dir}/src/log -->
-        <Property name="LOG_HOME" value="./log"/>
 
-        <Property name="LOG_ERROR_DIR" value="errorLog"/>
-
-        <Property name="LOG_INFO_DIR" value="infoLog"/>
-
-        <!--单独类打印日志目录-->
-        <Property name="LOG_CLASSTOLOG_DIR" value="classToLog"/>
-
-        <!--单独包下打印日志目录-->
-        <Property name="LOG_PACKAGETOLOG_DIR" value="packageToLog"/>
-
-        <!--methodToLog 单独包下打印日志-->
-        <Property name="LOG_METHODTOLOG_DIR" value="methodToLog"/>
-
-        <!-- 日志文件大小，超过这个大小将被压缩 -->
-        <Property name="LOG_MAX_SIZE" value="1 MB"/>
-        <!-- 最多保存文件数量 每次滚动计数器会重新计数 -->
-        <Property name="LOG_DAYS" value="50"/>
-        <!--输出日志的格式：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度， %msg：日志消息，%n是换行符 -->
-        <!--        %d{HH:mm:ss.SSS} 表示输出到毫秒的时间-->
-        <!--        %t 输出当前线程名称-->
-        <!--        %-5level 输出日志级别，-5表示左对齐并且固定输出5个字符，如果不足在右边补0-->
-        <!--        %logger 输出logger名称，因为Root Logger没有名称，所以没有输出-->
-        <!--        %msg 日志文本-->
-        <!--        %n 换行-->
-        <!--        %p:日志级别-->
-        <Property name="LOG_PATTERN" value="[%-5p] %d{yyyy-MM-dd HH:mm:ss} %m%n"/>
-        <!--        <Property name="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>-->
-
-        <!--interval属性用来指定多久滚动一次-->
-        <Property name="TIME_BASED_INTERVAL" value="1"/>
-
-        <!--日志删除: 该目录下最多保存文件数量-->
-        <Property name="LOG_FILE_COUNT" value="5"/>
-    </Properties>
 
 </Configuration>
