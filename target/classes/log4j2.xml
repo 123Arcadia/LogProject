@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--<Configuration status="DEBUG">-->
 <Configuration>
     <Properties>
         <!-- 日志输出级别 -->
@@ -25,15 +26,25 @@
         <!-- 日志文件大小，超过这个大小将被压缩 -->
         <Property name="LOG_MAX_SIZE" value="1 MB"/>
         <!-- 最多保存文件数量 每次滚动计数器会重新计数 -->
-        <Property name="LOG_DAYS" value="15"/>
+        <Property name="LOG_DAYS" value="50"/>
         <!--输出日志的格式：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度， %msg：日志消息，%n是换行符 -->
-        <Property name="LOG_PATTERN" value="[%-5p] %d{yyyy-MM-dd HH:mm:ss} %m%n"/>
+        <!--        %d{HH:mm:ss.SSS} 表示输出到毫秒的时间-->
+        <!--        %t 输出当前线程名称-->
+        <!--        %-5level 输出日志级别，-5表示左对齐并且固定输出5个字符，如果不足在右边补0-->
+        <!--        %logger 输出logger名称，因为Root Logger没有名称，所以没有输出-->
+        <!--        %msg 日志文本-->
+        <!--        %n 换行-->
+        <!--        %p:日志级别-->
+        <Property name="LOG_PATTERN" value="[%-5p] %d{yyyy-MM-dd HH:mm:ss.SSS} %m%n"/>
+        <!--        <Property name="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>-->
+
         <!--interval属性用来指定多久滚动一次-->
         <Property name="TIME_BASED_INTERVAL" value="1"/>
 
         <!--日志删除: 该目录下最多保存文件数量-->
         <Property name="LOG_FILE_COUNT" value="5"/>
     </Properties>
+
 
     <Appenders>
         <!-- 控制台输出 -->
@@ -85,7 +96,13 @@
                 <TimeBasedTriggeringPolicy interval="${TIME_BASED_INTERVAL}"/>
                 <SizeBasedTriggeringPolicy size="${LOG_MAX_SIZE}"/>
             </Policies>
-            <DefaultRolloverStrategy max="${LOG_DAYS}"/>
+            <DefaultRolloverStrategy max="${LOG_DAYS}">
+                <Delete basePath="${LOG_HOME}/${LOG_ERROR_DIR}" maxDepth="1">
+                    <IfFileName glob="*.log.gz" />
+                    <!--                    <IfLastModified age="1m" />-->
+                    <IfAccumulatedFileCount exceeds="${LOG_FILE_COUNT}"/>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingRandomAccessFile>
 
         <!--单独类打印日志-->
@@ -102,7 +119,13 @@
                 <TimeBasedTriggeringPolicy interval="${TIME_BASED_INTERVAL}"/>
                 <SizeBasedTriggeringPolicy size="${LOG_MAX_SIZE}"/>
             </Policies>
-            <DefaultRolloverStrategy max="${LOG_DAYS}"/>
+            <DefaultRolloverStrategy max="${LOG_DAYS}">
+                <Delete basePath="${LOG_HOME}/${LOG_CLASSTOLOG_DIR}" maxDepth="1">
+                    <IfFileName glob="*.log.gz" />
+                    <!--                    <IfLastModified age="1m" />-->
+                    <IfAccumulatedFileCount exceeds="${LOG_FILE_COUNT}"/>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingRandomAccessFile>
 
         <!--单独包下打印日志-->
@@ -119,7 +142,13 @@
                 <TimeBasedTriggeringPolicy interval="${TIME_BASED_INTERVAL}"/>
                 <SizeBasedTriggeringPolicy size="${LOG_MAX_SIZE}"/>
             </Policies>
-            <DefaultRolloverStrategy max="${LOG_DAYS}"/>
+            <DefaultRolloverStrategy max="${LOG_DAYS}">
+                <Delete basePath="${LOG_HOME}/${LOG_PACKAGETOLOG_DIR}" maxDepth="1">
+                    <IfFileName glob="*.log.gz" />
+                    <!--                    <IfLastModified age="1m" />-->
+                    <IfAccumulatedFileCount exceeds="${LOG_FILE_COUNT}"/>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingRandomAccessFile>
 
         <!--methodToLog 打印某一方法日志-->
@@ -136,7 +165,13 @@
                 <TimeBasedTriggeringPolicy interval="${TIME_BASED_INTERVAL}"/>
                 <SizeBasedTriggeringPolicy size="${LOG_MAX_SIZE}"/>
             </Policies>
-            <DefaultRolloverStrategy max="${LOG_DAYS}"/>
+            <DefaultRolloverStrategy max="${LOG_DAYS}">
+                <Delete basePath="${LOG_HOME}/${LOG_METHODTOLOG_DIR}" maxDepth="1">
+                    <IfFileName glob="*.log.gz" />
+                    <!--                    <IfLastModified age="1m" />-->
+                    <IfAccumulatedFileCount exceeds="${LOG_FILE_COUNT}"/>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingRandomAccessFile>
 
     </Appenders>
@@ -154,24 +189,24 @@
         <!--root/ 是同步-->
         <Root level="${LOG_INFO_LEVEL}" includeLocation="false" additivity="false">
             <AppenderRef ref="inf"/>
-<!--            <AppenderRef ref="err"/>-->
+            <AppenderRef ref="err"/>
             <AppenderRef ref="STDOUT"/>
         </Root>
 
         <!--单独类打印日志-->
-        <!-- 将logger中的 additivity 属性配置为 false，则这个logger不会将日志流反馈到root中-->
-<!--        <Logger name="classToLog" additivity="false" level="${LOG_INFO_LEVEL}">-->
-<!--            <AppenderRef ref="classToLog"/>-->
-<!--        </Logger>-->
+         将logger中的 additivity 属性配置为 false，则这个logger不会将日志流反馈到root中
+        <Logger name="classToLog" additivity="false" level="${LOG_INFO_LEVEL}">
+            <AppenderRef ref="classToLog"/>
+        </Logger>
 
-<!--        &lt;!&ndash;单独包下打印日志&ndash;&gt;-->
-<!--        <Logger name="org.cyan.packageToLog" additivity="false" level="${LOG_INFO_LEVEL}">-->
-<!--            <AppenderRef ref="packToLog"/>-->
-<!--        </Logger>-->
-<!--        &lt;!&ndash;methodToLog 打印某一方法日志&ndash;&gt;-->
-<!--        <Logger name="methodToLog" additivity="false" level="${LOG_INFO_LEVEL}">-->
-<!--            <AppenderRef ref="methodToLog"/>-->
-<!--        </Logger>-->
+        <!--单独包下打印日志-->
+        <Logger name="org.cyan.packageToLog" additivity="false" level="${LOG_INFO_LEVEL}">
+            <AppenderRef ref="packToLog"/>
+        </Logger>
+        <!--methodToLog 打印某一方法日志-->
+        <Logger name="methodToLog" additivity="false" level="${LOG_INFO_LEVEL}">
+            <AppenderRef ref="methodToLog"/>
+        </Logger>
 
         <!--        <AsyncLogger name="springfox" level="OFF"/> &lt;!&ndash;swagger2日志输出为关闭级别&ndash;&gt;-->
         <!--        <AsyncRoot level="${LOG_INFO_LEVEL}" includeLocation="false">  &lt;!&ndash;异步模式<AsyncRoot>需要依赖jar包disruptor，同步模式<root/>&ndash;&gt;-->
@@ -182,5 +217,7 @@
         <!--&lt;!&ndash;            <appender-ref ref="Logstash" level="info"/> &lt;!&ndash;日志输出到logstash&ndash;&gt;&ndash;&gt;-->
         <!--        </AsyncRoot>-->
     </Loggers>
+
+
 
 </Configuration>
